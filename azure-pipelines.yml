@@ -1,0 +1,38 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@0
+    
+- powershell: .\scripts\build.ps1 -configuration $(buildConfiguration) 
+  displayName: 'scripts\build.ps1'
+
+- powershell: |
+   npm run build:test
+  displayName: 'npm run build:test'
+  
+- task: VSTest@2
+  inputs:
+    testAssemblyVer2: '**\*Tests.js'
+    runSettingsFile: '$(System.DefaultWorkingDirectory)\RunSettings.xml'
+    pathtoCustomTestAdapters: '$(System.DefaultWorkingDirectory)\artifacts\Release\net451'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+    runTestsInIsolation: true
+  displayName: 'JavaScript Tests'
+  
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+  displayName: 'Managed Tests'
