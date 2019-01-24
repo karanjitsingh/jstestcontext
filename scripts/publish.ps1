@@ -3,7 +3,7 @@
 
 ./build.ps1 -configuration Release -clean
 
-$file = Get-ChildItem ..\artifacts\Release\jstestadapter*.tgz | select -last 1
+$file = Get-ChildItem ..\artifacts\Release\jstestcontext*.tgz | select -last 1
 
 $filename = $file.Name
 
