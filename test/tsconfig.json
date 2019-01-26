@@ -8,5 +8,6 @@
         "baseUrl": "./",
         "sourceRoot": "../../",
         "skipLibCheck": true,
+        "strict": false
     }
 }
