@@ -1,5 +1,6 @@
 // tslint:disable:no-invalid-this
 // tslint:disable:no-arg
+// tslint:disable:no-banned-terms
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
@@ -21,12 +22,37 @@ try {
     // how to log?
 }
 
+function callerMatch(method: any, caller: any, depth: number): boolean {
+    if (method === caller) {
+        return true;
+    } else if (!caller) {
+        return false;
+    }
+
+    try {
+        let nestedCaller = caller;
+        for (let i = 1; i <= depth; i++) {
+            nestedCaller = nestedCaller.caller;
+
+            if (!nestedCaller) {
+                return false;
+            }
+
+            if (nestedCaller === method) {
+                return true;
+            }
+        }
+    } catch (e) {
+        return false;
+    }
+}
+
 export namespace TestContext {
     export function getCurrentTestName() {
         if (itOverrideSuccess) {
             // Jasmine/Jest
             for (let i = 0; i < itList.length; i++) {
-                if (itList[i][2] === <any>getCurrentTestName.caller ) {
+                if (callerMatch(itList[i][2], <any>getCurrentTestName.caller, 5)) {
                     
                     const spec = itList[i][0];
 
