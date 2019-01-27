@@ -1,12 +1,21 @@
 import { Md5 } from './Utils/MD5';
-// import * as fs from 'fs';
-// import * as path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as assert from 'assert';
 
 // tslint:disable:no-invalid-this
 // tslint:disable:no-arg
 // tslint:disable:no-banned-terms
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
+
+export interface ITestContextOptions {
+    callerRecursionDepth: number;
+}
+
+const options: ITestContextOptions = {
+    callerRecursionDepth: 5
+};
 
 declare var it: any;
 
@@ -53,16 +62,19 @@ function callerMatch(method: any, caller: any, depth: number): boolean {
             }
         }
     } catch (e) {
+        // tslint:disable-next-line:max-line-length
+        assert.fail(`jstestcontext: Could not get current test name with caller recursion depth ${options.callerRecursionDepth}. Refer to https://github.com/karanjitsingh/jstestcontext for correct usage.`);
         return false;
     }
 }
 
 export namespace TestContext {
+    
     export function getCurrentTestName(): string | null {
         if (itOverrideSuccess) {
             // Jasmine/Jest
             for (let i = 0; i < itList.length; i++) {
-                if (callerMatch(itList[i][2], <any>getCurrentTestName.caller, 5)) {
+                if (callerMatch(itList[i][2], <any>getCurrentTestName.caller, options.callerRecursionDepth)) {
                     
                     const spec = itList[i][0];
 
@@ -87,31 +99,31 @@ export namespace TestContext {
     }
 
     export function getTestAttachmentDirectory(): string | null {
-        // const testResultsDirectory = process.env[testResultsEnvVar];
+        const testResultsDirectory = process.env[testResultsEnvVar];
         
-        // if (!testResultsDirectory) {
-        //     return null;
-        // }
+        if (!testResultsDirectory) {
+            return null;
+        }
 
-        // const testName = this.getCurrentTestName();
+        const testName = this.getCurrentTestName();
 
-        // if (!testName) {
-        //     return null;
-        // }
+        if (!testName) {
+            return null;
+        }
 
-        // try {
-        //     const testHash = getTestGuid(testName);
-        //     const testFolder = path.join(testResultsDirectory, testHash);
+        try {
+            const testHash = getTestGuid(testName);
+            const testFolder = path.join(testResultsDirectory, testHash);
 
-        //     if (!fs.existsSync(testFolder)) {
-        //         fs.mkdirSync(testFolder);
-        //     }
+            if (!fs.existsSync(testFolder)) {
+                fs.mkdirSync(testFolder);
+            }
 
-        //     return testFolder;
-        // } catch (e) {
-        //     // how to log?
-        //     return null;
-        // } 
+            return testFolder;
+        } catch (e) {
+            // how to log?
+            return null;
+        } 
         return null;
     }
 
