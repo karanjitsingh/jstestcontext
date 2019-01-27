@@ -39,17 +39,21 @@ function callerMatch(method: any, caller: any, depth: number): boolean {
         return false;
     }
 
-    let nestedCaller = caller;
-    for (let i = 1; i <= depth; i++) {
-        nestedCaller = nestedCaller.caller;
+    try {
+        let nestedCaller = caller;
+        for (let i = 1; i <= depth; i++) {
+            nestedCaller = nestedCaller.caller;
 
-        if (!nestedCaller) {
-            return false;
-        }
+            if (!nestedCaller) {
+                return false;
+            }
 
-        if (nestedCaller === method) {
-            return true;
+            if (nestedCaller === method) {
+                return true;
+            }
         }
+    } catch (e) {
+        return false;
     }
 }
 
