@@ -5,6 +5,7 @@
   "directories": {
     "test": "test"
   },
+  "main": "TestContext.js",
   "scripts": {
     "lint": "tslint --project ./src/tsconfig.json",
     "lint:test": "tslint --project ./test/tsconfig.json",
