@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Md5 } from '../Utils/MD5';
 import { TestContext } from './TestContext';
-import { resolve } from 'dns';
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
