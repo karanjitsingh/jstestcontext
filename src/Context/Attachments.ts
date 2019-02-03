@@ -1,7 +1,9 @@
-import { TestContext } from './TestContext';
+import * as assert from 'assert';
 import * as fs from 'fs';
-import { Md5 } from '../Utils/MD5';
 import * as path from 'path';
+import { Md5 } from '../Utils/MD5';
+import { TestContext } from './TestContext';
+import { resolve } from 'dns';
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
@@ -13,6 +15,10 @@ export namespace Attachments {
         return hash.getGuid();
     }
     
+    /**
+    * Get the test attachment directory for the current test.
+    * @returns Returns path to the directory.
+    */
     export function getTestAttachmentDirectory(): string | null {
         const testResultsDirectory = process.env[testResultsEnvVar];
         
@@ -37,14 +43,40 @@ export namespace Attachments {
 
             return testFolder;
         } catch (e) {
-            // how to log?
+            assert.fail('Could not get test attachment directory: ' + e.message);
             return null;
         }
     }
 
-    export function recordAttachment(path: string): boolean {
-        // const testAttachmentDirectory = getTestAttachmentDirectory();
-        
-        return false;
+    /**
+    * Copies an attachment to the test attachment directory.
+    * @param attachmentPath Path of the attachment.
+    * @returns Returns a promise that resolves to true if success
+    */
+    export function recordAttachment(attachmentPath: string): Promise<boolean> {
+        let resolver;
+        // tslint:disable-next-line:promise-must-complete
+        const returnPromise = new Promise<boolean>((resolve) => { resolver = resolve; });
+        if (fs.existsSync(attachmentPath)) {
+            try {
+                const stat = fs.lstatSync(attachmentPath);
+                if (stat.isFile()) {
+                    const attachmentDirectory = getTestAttachmentDirectory();
+                    fs.copyFile(attachmentPath, path.join(attachmentDirectory, path.basename(attachmentPath)), (error) => {
+                        if (!error) {
+                            resolver(true);
+                        } else {
+                            resolver(false);
+                        }
+                    });
+                } else {
+                    resolver(false);
+                }
+
+            } catch {
+                resolver(false);
+            }
+        }
+        return returnPromise;
     }
 }
