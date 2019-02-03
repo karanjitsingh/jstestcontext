@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
+        "module": "commonjs",
         "rootDir": "./",
         "sourceMap": true,
         "outDir": "./bin/Debug",

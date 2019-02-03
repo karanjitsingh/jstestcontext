@@ -50,32 +50,37 @@ export namespace Attachments {
     /**
     * Copies an attachment to the test attachment directory.
     * @param attachmentPath Path of the attachment.
-    * @returns Returns a promise that resolves to true if success
+    * @returns Returns a promise that resolves to the path of the copied file if success and reject with error/reason otherwise.
     */
-    export function recordAttachment(attachmentPath: string): Promise<boolean> {
-        let resolver;
+    export function recordAttachment(attachmentPath: string): Promise<string> {
+        let resolve: (value: string) => void;
+        let reject: (reason: any) => void;
+
         // tslint:disable-next-line:promise-must-complete
-        const returnPromise = new Promise<boolean>((resolve) => { resolver = resolve; });
+        const returnPromise = new Promise<string>((resolver, rejector) => { resolve = resolver; reject = rejector; });
         
         if (fs.existsSync(attachmentPath)) {
             try {
                 const stat = fs.lstatSync(attachmentPath);
                 if (stat.isFile()) {
                     const attachmentDirectory = getTestAttachmentDirectory();
-                    fs.copyFile(attachmentPath, path.join(attachmentDirectory, path.basename(attachmentPath)), (error) => {
+                    const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
+                    fs.copyFile(attachmentPath, destinationFile, (error) => {
                         if (!error) {
-                            resolver(true);
+                            resolve(destinationFile);
                         } else {
-                            resolver(false);
+                            reject(error);
                         }
                     });
                 } else {
-                    resolver(false);
+                    reject('Given path is not file.');
                 }
 
-            } catch {
-                resolver(false);
+            } catch (e) {
+                reject(e);
             }
+        } else {
+            reject('Given path does not exist.');
         }
         return returnPromise;
     }
