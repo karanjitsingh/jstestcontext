@@ -1,2 +1,2 @@
 export { TestContext } from './Context/TestContext';
-export {ITestContextOptions} from './Context/ITestContextOptions';
+export { ITestContextOptions } from './Context/ITestContextOptions';
