@@ -6,7 +6,7 @@
         "sourceMap": true,
         "lib": ["es2015", "dom"],
         "baseUrl": "./",
-        "sourceRoot": "../../",
+        "sourceRoot": "../../../",
         "skipLibCheck": true,
         "strict": false
     }

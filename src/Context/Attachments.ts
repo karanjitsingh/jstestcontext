@@ -56,6 +56,7 @@ export namespace Attachments {
         let resolver;
         // tslint:disable-next-line:promise-must-complete
         const returnPromise = new Promise<boolean>((resolve) => { resolver = resolve; });
+        
         if (fs.existsSync(attachmentPath)) {
             try {
                 const stat = fs.lstatSync(attachmentPath);
