@@ -63,7 +63,7 @@ export namespace Attachments {
             try {
                 const stat = fs.lstatSync(attachmentPath);
                 if (stat.isFile()) {
-                    const attachmentDirectory = getTestAttachmentDirectory();
+                    const attachmentDirectory = Attachments.getTestAttachmentDirectory();
                     const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
                     fs.copyFile(attachmentPath, destinationFile, (error) => {
                         if (!error) {
@@ -73,14 +73,14 @@ export namespace Attachments {
                         }
                     });
                 } else {
-                    reject('Given path is not file.');
+                    reject('Given path is not a file.');
                 }
 
             } catch (e) {
-                reject(e);
+                reject('Could not copy attachment: ' + e);
             }
         } else {
-            reject('Given path does not exist.');
+            reject('The file ' + attachmentPath + ' does not exist.');
         }
         return returnPromise;
     }
