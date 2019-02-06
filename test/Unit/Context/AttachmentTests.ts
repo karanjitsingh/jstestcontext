@@ -1,10 +1,6 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
-import * as path from 'path';
 import { TestContext } from '../../../src';
-import { Md5 } from '../../../src/Utils/MD5';
-
-// tslint:disable
 
 describe('Attachment Suite', () => {
     const resultsDirectory = 'C:\\temp';
@@ -51,7 +47,7 @@ describe('Attachment Suite', () => {
         setup(new MockFunctions({
             existsSync: true,
             mkdirSync: true,
-            getCurrentTestName: true,
+            getCurrentTestName: true
         }), strings, checks, new MockReturns({
             existsSync: false
         }));
@@ -188,7 +184,6 @@ describe('Attachment Suite', () => {
         assert.equal(checks.lstatSyncCheck, true);
     });
 
-    
     it('recordAttachment will reject with reason if path does not exist', (done) => {
         const error = new Error('some error');
         const strings = new MockStrings();
@@ -216,34 +211,37 @@ describe('Attachment Suite', () => {
 const setup = (mocks: MockFunctions, strings: MockStrings, checks: MockChecks, returns: MockReturns) => {
     const testName = 'sample test';
 
-    if (mocks.getTestAttachmentDirectory)
+    if (mocks.getTestAttachmentDirectory) {
         TestContext.Attachments.getTestAttachmentDirectory = () => {
             return strings.attachmentDirectory;
         };
+    }
 
-    if (mocks.getCurrentTestName)
+    if (mocks.getCurrentTestName) {
         TestContext.getCurrentTestName = () => {
             return testName;
         };
+    }
 
-    if (mocks.existsSync)
+    if (mocks.existsSync) {
         Object.defineProperty(fs, 'existsSync', {
             value: (filePath) => {
                 checks.existsSyncCheck = true;
                 return returns.existsSync;
             }
         });
+    }
 
-    if (mocks.mkdirSync)
+    if (mocks.mkdirSync) {
         Object.defineProperty(fs, 'mkdirSync', {
             value: (filePath) => {
                 assert.equal(filePath, strings.attachmentDirectory);
                 checks.mkdirSyncCheck = true;
             }
         });
+    }
 
-
-    if (mocks.lstatSync)
+    if (mocks.lstatSync) {
         Object.defineProperty(fs, 'lstatSync', {
             value: (filePath) => {
                 assert.equal(filePath, strings.attachmentPath);
@@ -251,8 +249,9 @@ const setup = (mocks: MockFunctions, strings: MockStrings, checks: MockChecks, r
                 return returns.lstatSync;
             }
         });
+    }
 
-    if (mocks.copyFile)
+    if (mocks.copyFile) {
         Object.defineProperty(fs, 'copyFile', {
             value: (src, dest, callback) => {
                 assert.equal(src, strings.attachmentPath);
@@ -262,11 +261,12 @@ const setup = (mocks: MockFunctions, strings: MockStrings, checks: MockChecks, r
                 callback(returns.copyFile);
             }
         });
+    }
 };
 
 class Mockables {
 
-    init(options: any = {}, obj: Mockables) {
+    public init(options: any, obj: Mockables) {
         const keys = Object.keys(obj);
         keys.forEach((key) => {
             obj[key] = options[key] !== undefined ? options[key] : obj[key];
