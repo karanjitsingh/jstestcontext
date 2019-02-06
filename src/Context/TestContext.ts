@@ -22,6 +22,7 @@ export namespace TestContext {
             it = function(...args: Array<any>) {
                 const spec = oldit.call(this, ...args);
                 itList.push([spec, ...args]);
+                return spec;
             };
         
             itOverrideSuccess = true;
@@ -57,10 +58,18 @@ export namespace TestContext {
         }
     }
 
+    /**
+    * Update TestContextOptions
+    * @param testContextOptions instance of ITestContextOptions 
+    */
     export function updateOptions(testContextOptions: ITestContextOptions) {
         options = testContextOptions;
     }
 
+    /**
+    * Get the name of the current test.
+    * @returns Returns the name of the current test. 
+    */
     export function getCurrentTestName(): string | null {
         if (itOverrideSuccess) {
             // Jasmine/Jest
