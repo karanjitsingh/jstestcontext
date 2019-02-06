@@ -91,7 +91,7 @@ describe('Attachment Suite', () => {
         assert.equal(TestContext.Attachments.getTestAttachmentDirectory(), null);
     });
 
-    it('recordAttachment will copy file and resolve to true', (done) => {
+    it('recordAttachment will copy file and resolve to destination path', (done) => {
         const strings = new MockStrings();
         const checks = new MockChecks();
         const returns = new MockReturns();
