@@ -11,7 +11,7 @@
     "lint:test": "tslint --project ./test/tsconfig.json",
     "build:Debug": "./node_modules/.bin/tsc -p ./src/tsconfig.json --noImplicitUseStrict",
     "build:Release": "./node_modules/.bin/tsc -p ./src/tsconfig.json --outDir ./src/bin/Release",
-    "build:test": "./node_modules/.bin/tsc -p ./test/Unit/tsconfig.json",
+    "build:test": "./node_modules/.bin/tsc -p ./test/Unit/tsconfig.json --noImplicitUseStrict",
     "build": "npm run build:Debug",
     "test": "npm run build:test && node ./node_modules/mocha/bin/mocha -r source-map-support/register ./test/Unit/bin/test/**/*Tests.js",
     "test:debug": "npm run build:test && node --inspect-brk=9229 ./node_modules/mocha/bin/_mocha -r source-map-support/register ./test/Unit/bin/test/**/*Tests.js"
@@ -34,6 +34,6 @@
     "source-map-support": "^0.5.10",
     "tslint": "^5.12.1",
     "tslint-microsoft-contrib": "^6.0.0",
-    "typescript": "^3.2.4"
+    "typescript": "^2.8.3"
   }
 }

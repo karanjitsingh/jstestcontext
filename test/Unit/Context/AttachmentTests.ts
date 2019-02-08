@@ -9,6 +9,8 @@ describe('Attachment Suite', () => {
     let copyFileDescriptor: PropertyDescriptor;
     let lstatSyncDescriptor: PropertyDescriptor;
     let assertFailDescriptor: PropertyDescriptor;
+    const getTestAttachmentDirectoryFn = TestContext.Attachments.getTestAttachmentDirectory;
+    const getCurrentTestNameFn = TestContext.getCurrentTestName;
 
     beforeEach(() => {
         process.env.JSTEST_RESULTS_DIRECTORY = resultsDirectory;
@@ -17,6 +19,8 @@ describe('Attachment Suite', () => {
         copyFileDescriptor = Object.getOwnPropertyDescriptor(fs, 'copyFile');
         lstatSyncDescriptor = Object.getOwnPropertyDescriptor(fs, 'lstatSync');
         assertFailDescriptor = Object.getOwnPropertyDescriptor(assert, 'fail');
+        TestContext.Attachments.getTestAttachmentDirectory = getTestAttachmentDirectoryFn;
+        TestContext.getCurrentTestName = getCurrentTestNameFn;
     });
 
     afterEach(() => {
@@ -25,6 +29,8 @@ describe('Attachment Suite', () => {
         Object.defineProperty(fs, 'existsSync', lstatSyncDescriptor);
         Object.defineProperty(fs, 'mkdirSync', copyFileDescriptor);
         Object.defineProperty(assert, 'fail', assertFailDescriptor);
+        TestContext.Attachments.getTestAttachmentDirectory = getTestAttachmentDirectoryFn;
+        TestContext.getCurrentTestName = getCurrentTestNameFn;
     });
 
     it('getTestAttachmentDirectory will return correct directory', () => {
