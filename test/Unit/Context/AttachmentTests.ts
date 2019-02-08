@@ -10,7 +10,7 @@ describe('Attachment Suite', () => {
     let lstatSyncDescriptor: PropertyDescriptor;
     let assertFailDescriptor: PropertyDescriptor;
     const getTestAttachmentDirectoryFn = TestContext.Attachments.getTestAttachmentDirectory;
-    const getCurrentTestNameFn = TestContext.getCurrentTestName;
+    const getCurrentTestIdentifierFn = TestContext.getCurrentTestIdentifier;
 
     beforeEach(() => {
         process.env.JSTEST_RESULTS_DIRECTORY = resultsDirectory;
@@ -20,7 +20,7 @@ describe('Attachment Suite', () => {
         lstatSyncDescriptor = Object.getOwnPropertyDescriptor(fs, 'lstatSync');
         assertFailDescriptor = Object.getOwnPropertyDescriptor(assert, 'fail');
         TestContext.Attachments.getTestAttachmentDirectory = getTestAttachmentDirectoryFn;
-        TestContext.getCurrentTestName = getCurrentTestNameFn;
+        TestContext.getCurrentTestIdentifier = getCurrentTestIdentifierFn;
     });
 
     afterEach(() => {
@@ -30,7 +30,7 @@ describe('Attachment Suite', () => {
         Object.defineProperty(fs, 'mkdirSync', copyFileDescriptor);
         Object.defineProperty(assert, 'fail', assertFailDescriptor);
         TestContext.Attachments.getTestAttachmentDirectory = getTestAttachmentDirectoryFn;
-        TestContext.getCurrentTestName = getCurrentTestNameFn;
+        TestContext.getCurrentTestIdentifier = getCurrentTestIdentifierFn;
     });
 
     it('getTestAttachmentDirectory will return correct directory', () => {
@@ -39,7 +39,7 @@ describe('Attachment Suite', () => {
 
         setup(new MockFunctions({
             existsSync: true,
-            getCurrentTestName: true
+            getCurrentTestIdentifier: true
         }), strings, checks, new MockReturns());
 
         assert.equal(TestContext.Attachments.getTestAttachmentDirectory(), strings.attachmentDirectory);
@@ -53,7 +53,7 @@ describe('Attachment Suite', () => {
         setup(new MockFunctions({
             existsSync: true,
             mkdirSync: true,
-            getCurrentTestName: true
+            getCurrentTestIdentifier: true
         }), strings, checks, new MockReturns({
             existsSync: false
         }));
@@ -64,10 +64,9 @@ describe('Attachment Suite', () => {
     });
 
     it('getTestAttachmentDirectory will assert.fail if error occured', () => {
-        const testName = 'sample test';
 
-        TestContext.getCurrentTestName = () => {
-            return testName;
+        TestContext.getCurrentTestIdentifier = () => {
+            return new MockStrings().testId;
         };
 
         Object.defineProperty(fs, 'existsSync', {
@@ -85,8 +84,8 @@ describe('Attachment Suite', () => {
         TestContext.Attachments.getTestAttachmentDirectory();
     });
 
-    it('getTestAttachmentDirectory will return null if getCurrentTestName fails', () => {
-        TestContext.getCurrentTestName = () => {
+    it('getTestAttachmentDirectory will return null if getCurrentTestIdentifier fails', () => {
+        TestContext.getCurrentTestIdentifier = () => {
             return '';
         };
 
@@ -215,7 +214,6 @@ describe('Attachment Suite', () => {
 });
 
 const setup = (mocks: MockFunctions, strings: MockStrings, checks: MockChecks, returns: MockReturns) => {
-    const testName = 'sample test';
 
     if (mocks.getTestAttachmentDirectory) {
         TestContext.Attachments.getTestAttachmentDirectory = () => {
@@ -223,9 +221,9 @@ const setup = (mocks: MockFunctions, strings: MockStrings, checks: MockChecks, r
         };
     }
 
-    if (mocks.getCurrentTestName) {
-        TestContext.getCurrentTestName = () => {
-            return testName;
+    if (mocks.getCurrentTestIdentifier) {
+        TestContext.getCurrentTestIdentifier = () => {
+            return new MockStrings().testId;
         };
     }
 
@@ -285,7 +283,7 @@ class MockFunctions extends Mockables {
     public mkdirSync: boolean = false;
     public lstatSync: boolean = false;
     public copyFile: boolean = false;
-    public getCurrentTestName: boolean = false;
+    public getCurrentTestIdentifier: boolean = false;
     public getTestAttachmentDirectory: boolean = false;
 
     constructor(options: any = {}) {
@@ -319,7 +317,7 @@ class MockChecks extends Mockables {
 }
 
 class MockStrings extends Mockables {
-    public testName: string = 'sample test';
+    public testId: string = 'fc9dbe42-bb08-fee3-d521-cb7df88b0933';
     public attachmentPath: string = 'C:\\attachment.png';
     public attachmentDirectory: string = 'C:\\temp\\fc9dbe42-bb08-fee3-d521-cb7df88b0933';
     public expectedAttachmentPath: string = 'C:\\temp\\fc9dbe42-bb08-fee3-d521-cb7df88b0933\\attachment.png';

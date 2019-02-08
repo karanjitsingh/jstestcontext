@@ -1,18 +1,11 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Md5 } from '../Utils/MD5';
 import { TestContext } from './TestContext';
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
 export namespace Attachments {
-    
-    function getTestGuid(testName: string): string {
-        const hash = new Md5();
-        hash.appendStr(testName);
-        return hash.getGuid();
-    }
     
     /**
     * Get the test attachment directory for the current test.
@@ -25,16 +18,15 @@ export namespace Attachments {
             return null;
         }
 
-        const testName = TestContext.getCurrentTestName();
-
-        if (!testName) {
-            return null;
-        }
-
         try {
             
-            const testHash = getTestGuid(testName);
-            const testFolder = path.join(testResultsDirectory, testHash);
+            const testId = TestContext.getCurrentTestIdentifier();
+
+            if (!testId) {
+                return null;
+            }
+
+            const testFolder = path.join(testResultsDirectory, testId);
 
             if (!fs.existsSync(testFolder)) {
                 fs.mkdirSync(testFolder);

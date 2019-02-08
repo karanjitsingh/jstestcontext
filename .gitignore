@@ -133,3 +133,4 @@ scripts/*
 !scripts/*.ps1
 !scripts/*.sh
 !scripts/key.snk
+!test/Integration/package-lock.json
