@@ -54,6 +54,7 @@ export namespace TestContext {
                 }
             }
         } catch (e) {
+            assert.fail(String.format(Constants.CouldNotGetTestMethodError, options.callerMatchDepth));
             return false;
         }
     }
@@ -89,7 +90,6 @@ export namespace TestContext {
                 }
             }
 
-            // tslint:disable-next-line:max-line-length
             assert.fail(String.format(Constants.CouldNotGetTestMethodError, options.callerMatchDepth));
         }
     }
