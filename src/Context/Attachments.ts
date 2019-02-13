@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
 import { TestContext } from './TestContext';
+import { Constants } from '../Constants';
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
@@ -34,7 +35,7 @@ export namespace Attachments {
 
             return testFolder;
         } catch (e) {
-            assert.fail('Could not get test attachment directory: ' + e.message);
+            assert.fail(String.format(Constants.TestAttachmentDirectoryError, e.message));
             return null;
         }
     }
@@ -65,14 +66,14 @@ export namespace Attachments {
                         }
                     });
                 } else {
-                    reject('Given path is not a file.');
+                    reject(Constants.PathIsNotAFile);
                 }
 
             } catch (e) {
-                reject('Could not copy attachment: ' + e);
+                reject(String.format(Constants.CouldNotCopyAttachmentError, e));
             }
         } else {
-            reject('The file ' + attachmentPath + ' does not exist.');
+            reject(String.format(Constants.AttachmentDoesNotExist, attachmentPath));
         }
         return returnPromise;
     }

@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ITestContextOptions } from './ITestContextOptions';
 import { Attachments as _Attachments } from './Attachments';
 import { Md5 } from '../Utils/MD5';
+import { Constants } from '../Constants';
 
 // tslint:disable:no-invalid-this
 // tslint:disable:no-banned-terms
@@ -15,7 +16,7 @@ export namespace TestContext {
     
     const itList = [];
     const defaultOptions = <ITestContextOptions> {
-        callerMatchDepth: 5
+        callerMatchDepth: 0
     };
 
     function init(options: ITestContextOptions) {
@@ -89,7 +90,7 @@ export namespace TestContext {
             }
 
             // tslint:disable-next-line:max-line-length
-            assert.fail(`jstestcontext: Could not get current test method with caller recursion depth ${options.callerMatchDepth}. Refer to https://github.com/karanjitsingh/jstestcontext for correct usage.`);
+            assert.fail(String.format(Constants.CouldNotGetTestMethodError, options.callerMatchDepth));
         }
     }
 
