@@ -2,7 +2,7 @@ resources:
 - repo: self
 
 pool:
-  vmImage: Hosted VS2017
+  vmImage: 'VS2017-Win2016'
   demands: vstest
 
 steps:
