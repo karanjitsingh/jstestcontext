@@ -1,0 +1,5 @@
+<RunSettings>
+    <JSTest>
+        <TestFramework>jest</TestFramework>
+    </JSTest>
+</RunSettings>

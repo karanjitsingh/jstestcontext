@@ -1,18 +1,12 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Md5 } from '../Utils/MD5';
 import { TestContext } from './TestContext';
+import { Constants } from '../Constants';
 
 const testResultsEnvVar = 'JSTEST_RESULTS_DIRECTORY';
 
 export namespace Attachments {
-    
-    function getTestGuid(testName: string): string {
-        const hash = new Md5();
-        hash.appendStr(testName);
-        return hash.getGuid();
-    }
     
     /**
     * Get the test attachment directory for the current test.
@@ -25,16 +19,15 @@ export namespace Attachments {
             return null;
         }
 
-        const testName = TestContext.getCurrentTestName();
-
-        if (!testName) {
-            return null;
-        }
-
         try {
             
-            const testHash = getTestGuid(testName);
-            const testFolder = path.join(testResultsDirectory, testHash);
+            const testId = TestContext.getCurrentTestIdentifier();
+
+            if (!testId) {
+                return null;
+            }
+
+            const testFolder = path.join(testResultsDirectory, testId);
 
             if (!fs.existsSync(testFolder)) {
                 fs.mkdirSync(testFolder);
@@ -42,7 +35,7 @@ export namespace Attachments {
 
             return testFolder;
         } catch (e) {
-            assert.fail('Could not get test attachment directory: ' + e.message);
+            assert.fail(String.format(Constants.TestAttachmentDirectoryError, e.message));
             return null;
         }
     }
@@ -59,28 +52,24 @@ export namespace Attachments {
         // tslint:disable-next-line:promise-must-complete
         const returnPromise = new Promise<string>((resolver, rejector) => { resolve = resolver; reject = rejector; });
         
-        if (fs.existsSync(attachmentPath)) {
-            try {
-                const stat = fs.lstatSync(attachmentPath);
-                if (stat.isFile()) {
-                    const attachmentDirectory = Attachments.getTestAttachmentDirectory();
-                    const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
-                    fs.copyFile(attachmentPath, destinationFile, (error) => {
-                        if (!error) {
-                            resolve(destinationFile);
-                        } else {
-                            reject(error);
-                        }
-                    });
-                } else {
-                    reject('Given path is not a file.');
-                }
-
-            } catch (e) {
-                reject('Could not copy attachment: ' + e);
+        try {
+            const stat = fs.lstatSync(attachmentPath);
+            if (stat.isFile()) {
+                const attachmentDirectory = Attachments.getTestAttachmentDirectory();
+                const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
+                fs.copyFile(attachmentPath, destinationFile, (error) => {
+                    if (!error) {
+                        resolve(destinationFile);
+                    } else {
+                        reject(error);
+                    }
+                });
+            } else {
+                reject(Constants.PathIsNotAFile);
             }
-        } else {
-            reject('The file ' + attachmentPath + ' does not exist.');
+
+        } catch (e) {
+            reject(String.format(Constants.CouldNotCopyAttachmentError, e));
         }
         return returnPromise;
     }

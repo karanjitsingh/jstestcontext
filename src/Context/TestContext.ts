@@ -1,6 +1,9 @@
 import * as assert from 'assert';
+import * as path from 'path';
 import { ITestContextOptions } from './ITestContextOptions';
 import { Attachments as _Attachments } from './Attachments';
+import { Md5 } from '../Utils/MD5';
+import { Constants } from '../Constants';
 
 // tslint:disable:no-invalid-this
 // tslint:disable:no-banned-terms
@@ -8,27 +11,30 @@ import { Attachments as _Attachments } from './Attachments';
 declare var it: any;
 
 export namespace TestContext {
-    
+
+    // tslint:disable-next-line:variable-name
+    export const Attachments = _Attachments;
+
     let itOverrideSuccess = false;
-    const itList = [];
     let options: ITestContextOptions;
+
+    const itList = [];
+    const defaultOptions = <ITestContextOptions>{
+        callerMatchDepth: 2
+    };
 
     function init(options: ITestContextOptions) {
         updateOptions(options);
-        
-        try {
-            const oldit = it;
-        
-            it = function(...args: Array<any>) {
-                const spec = oldit.call(this, ...args);
-                itList.push([spec, ...args]);
-                return spec;
-            };
-        
-            itOverrideSuccess = true;
-        } catch (e) {
-            // how to log?
-        }
+        const oldit = it;
+
+        it = function (...args: Array<any>) {
+            // oldit.call can fail
+            const spec = oldit.call(this, ...args);
+            itList.push([spec, ...args]);
+            return spec;
+        };
+
+        itOverrideSuccess = true;
     }
 
     function callerMatch(method: any, caller: any, depth: number): boolean {
@@ -37,24 +43,57 @@ export namespace TestContext {
         } else if (!caller) {
             return false;
         }
-    
+
         try {
             let nestedCaller = caller;
             for (let i = 1; i <= depth; i++) {
                 nestedCaller = nestedCaller.caller;
-    
+
                 if (!nestedCaller) {
                     return false;
                 }
-    
+
                 if (nestedCaller === method) {
                     return true;
                 }
             }
         } catch (e) {
-            // tslint:disable-next-line:max-line-length
-            assert.fail(`jstestcontext: Could not get current test name with caller recursion depth ${options.callerRecursionDepth}. Refer to https://github.com/karanjitsingh/jstestcontext for correct usage.`);
             return false;
+        }
+    }
+
+    function getTestName(caller: Function, getIdentifier: boolean = false) {
+        if (caller === Attachments.getTestAttachmentDirectory) {
+            caller = caller.caller;
+        }
+
+        if (itOverrideSuccess) {
+            // Jasmine/Jest
+            for (let i = 0; i < itList.length; i++) {
+                if (callerMatch(itList[i][2], <any>caller, options.callerMatchDepth)) {
+                    const spec = itList[i][0];
+
+                    // jasmine/jest
+                    if (getIdentifier && spec.id) {
+                        return spec.id;
+                    } else if (spec.description) {
+                        return spec.description;
+                    }
+
+                    // mocha
+                    if (spec.title) {
+                        let node = spec;
+                        let title = '';
+                        while (node && !node.root) {
+                            title = node.title + (title ? ' ' : '') + title;
+                            node = node.parent;
+                        }
+                        return title;
+                    }
+                }
+            }
+
+            assert.fail(String.format(Constants.CouldNotGetTestMethodError, options.callerMatchDepth));
         }
     }
 
@@ -71,37 +110,29 @@ export namespace TestContext {
     * @returns Returns the name of the current test. 
     */
     export function getCurrentTestName(): string | null {
-        if (itOverrideSuccess) {
-            // Jasmine/Jest
-            for (let i = 0; i < itList.length; i++) {
-                if (callerMatch(itList[i][2], <any>getCurrentTestName.caller, options.callerRecursionDepth)) {
-                    
-                    const spec = itList[i][0];
-
-                    // jasmine/jest
-                    if (spec.id) {
-                        return spec.id;
-                    }
-
-                    // mocha
-                    if (spec.title) {
-                        let node = spec;
-                        let title = '';
-                        while (node && !node.root) {
-                            title = node.title + (title ? ' ' : '') + title;
-                            node = node.parent;
-                        }
-                        return title;
-                    }
-                }
-            }
-        }
+        return getTestName(getCurrentTestName.caller);
     }
 
-    // tslint:disable-next-line:variable-name
-    export const Attachments = _Attachments;
+    /**
+    * Get the identifier of the current test.
+    * @returns Returns the name of the current test. 
+    */
+    export function getCurrentTestIdentifier(): string | null {
+        const testName = getTestName(getCurrentTestIdentifier.caller, true);
 
-    init({
-        callerRecursionDepth: 5
-    });
+        if (testName) {
+            const hash = new Md5();
+            hash.appendStr(testName);
+            return hash.getGuid();
+        }
+
+        return null;
+    }
+
+    init(defaultOptions);
 }
+
+const contextFolder = path.dirname(__filename);
+delete require.cache[__filename];
+delete require.cache[path.join(contextFolder, 'Attachments.js')];
+delete require.cache[path.join(path.dirname(contextFolder), 'index.js')];
