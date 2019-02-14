@@ -133,10 +133,6 @@ Calling in recurisve method does not work since `Function.caller` is a static pr
 ```typescript
 describe('Dont make such mistakes', () => {
     it('Im a smart guy using recursive functions', () => {
-    
-        /* 
-         *
-        */
         const dir = method();
     });
 })
