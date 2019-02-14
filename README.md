@@ -16,3 +16,4 @@ jstestcontext is an extension package for [jstestadapter](https://github.com/kar
 npm run test
 ```
 
+{{USAGE.md}}
