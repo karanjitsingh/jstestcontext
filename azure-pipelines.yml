@@ -1,38 +1,58 @@
-# .NET Desktop
-# Build and run tests for .NET Desktop or Windows classic desktop solutions.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
+resources:
+- repo: self
 
 pool:
-  vmImage: 'VS2017-Win2016'
-
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  vmImage: Hosted VS2017
+  demands: vstest
 
 steps:
-- task: NuGetToolInstaller@0
-    
-- powershell: .\scripts\build.ps1 -configuration $(buildConfiguration) 
-  displayName: 'scripts\build.ps1'
+- powershell: 'npm install'
+  displayName: 'npm install'
+  enabled: false
 
 - powershell: |
-   npm run build:test
-  displayName: 'npm run build:test'
-  
+   cd scripts
+   ./build.ps1
+  displayName: Build
+
+- powershell: 'npm run build:test'
+  displayName: 'Build Tests'
+
 - task: VSTest@2
+  displayName: 'Unit Tests'
   inputs:
-    testAssemblyVer2: '**\*Tests.js'
-    runSettingsFile: '$(System.DefaultWorkingDirectory)\RunSettings.xml'
-    pathtoCustomTestAdapters: '$(System.DefaultWorkingDirectory)\artifacts\Release\net451'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-    runTestsInIsolation: true
-  displayName: 'JavaScript Tests'
-  
+    testAssemblyVer2: 'test\Unit\bin\test\**\*Tests.js'
+    runSettingsFile: 'test/Unit/unit-tests.xml'
+    pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
+    testRunTitle: 'Unit Tests'
+
+- powershell: |
+   cd ./test/Integration
+   npm install
+  displayName: 'npm install - Integration tests'
+
 - task: VSTest@2
+  displayName: 'Integration Tests - jest'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-  displayName: 'Managed Tests'
+    testAssemblyVer2: 'test\Integration\package.json'
+    runSettingsFile: 'test/Integration/RunSettings/jest-integration.xml'
+    pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
+    testRunTitle: 'Integration Jest'
+
+- task: VSTest@2
+  displayName: 'Integration Tests - mocha'
+  inputs:
+    testAssemblyVer2: 'test\Integration\*.test.js'
+    runSettingsFile: 'test/Integration/RunSettings/mocha-integration.xml'
+    pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
+    testRunTitle: 'Integration Mocha'
+
+- task: VSTest@2
+  displayName: 'Integration Tests - jasmine'
+  inputs:
+    testAssemblyVer2: 'test\Integration\*.test.js'
+    runSettingsFile: 'test/Integration/RunSettings/jasmine-integration.xml'
+    pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
+    testRunTitle: 'Integration Jasmine'
+
+
