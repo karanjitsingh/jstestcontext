@@ -4,7 +4,8 @@ const TestContext = require('jstestcontext').TestContext;
 process.env['JSTEST_RESULTS_DIRECTORY'] = 'C:\\temp';
 
 describe('Async Functions', () => {
-        it('Async Call', async () => {
+    
+    it('Async Call', async () => {
         console.log(TestContext.Attachments.getTestAttachmentDirectory());
         console.log(TestContext.getCurrentTestName());
         console.log(TestContext.getCurrentTestIdentifier())
