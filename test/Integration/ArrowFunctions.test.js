@@ -12,8 +12,6 @@ describe('Arrow Functions', () => {
     });
 
     it('Nested Call', () => {
-
-        
         let threw = false;
         try {
             nested()
