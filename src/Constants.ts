@@ -11,6 +11,10 @@ String.format = (str: string, ...params: Array<string>): string => {
     const regex = /{[0-9]+}/g;
     const matches: Array<string | number> = str.match(regex);
 
+    if (!matches) {
+        return str;
+    }
+
     matches.forEach((value: string, i, arr) => {
         arr[i] = parseInt(value.substr(1, value.length - 2));
     });
@@ -30,5 +34,4 @@ export class Constants {
     public static readonly TestAttachmentDirectoryError: string = 'Could not get test attachment directory: {0}';
     public static readonly PathIsNotAFile: string = 'Given path is not a file.';
     public static readonly CouldNotCopyAttachmentError: string = 'Could not copy attachment: {0}';
-    public static readonly AttachmentDoesNotExist: string = 'The file {0} does not exist.';
 }

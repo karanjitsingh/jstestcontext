@@ -11,29 +11,29 @@ import { Constants } from '../Constants';
 declare var it: any;
 
 export namespace TestContext {
-    
+
     // tslint:disable-next-line:variable-name
     export const Attachments = _Attachments;
 
     let itOverrideSuccess = false;
     let options: ITestContextOptions;
-    
+
     const itList = [];
-    const defaultOptions = <ITestContextOptions> {
-        callerMatchDepth: 0
+    const defaultOptions = <ITestContextOptions>{
+        callerMatchDepth: 2
     };
 
     function init(options: ITestContextOptions) {
         updateOptions(options);
         const oldit = it;
-    
-        it = function(...args: Array<any>) {
+
+        it = function (...args: Array<any>) {
             // oldit.call can fail
             const spec = oldit.call(this, ...args);
             itList.push([spec, ...args]);
             return spec;
         };
-    
+
         itOverrideSuccess = true;
     }
 
@@ -43,26 +43,25 @@ export namespace TestContext {
         } else if (!caller) {
             return false;
         }
-    
+
         try {
             let nestedCaller = caller;
             for (let i = 1; i <= depth; i++) {
                 nestedCaller = nestedCaller.caller;
-    
+
                 if (!nestedCaller) {
                     return false;
                 }
-    
+
                 if (nestedCaller === method) {
                     return true;
                 }
             }
         } catch (e) {
-            assert.fail(String.format(Constants.CouldNotGetTestMethodError, options.callerMatchDepth));
             return false;
         }
     }
-    
+
     function getTestName(caller: Function, getIdentifier: boolean = false) {
         if (caller === Attachments.getTestAttachmentDirectory) {
             caller = caller.caller;
@@ -75,14 +74,10 @@ export namespace TestContext {
                     const spec = itList[i][0];
 
                     // jasmine/jest
-                    if (getIdentifier) {
-                        if (spec.id) {
-                            return spec.id;
-                        }
-                    } else {
-                        if (spec.description) {
-                            return spec.description;
-                        }
+                    if (getIdentifier && spec.id) {
+                        return spec.id;
+                    } else if (spec.description) {
+                        return spec.description;
                     }
 
                     // mocha
@@ -130,7 +125,7 @@ export namespace TestContext {
             hash.appendStr(testName);
             return hash.getGuid();
         }
-        
+
         return null;
     }
 

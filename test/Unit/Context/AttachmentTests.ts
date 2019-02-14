@@ -98,7 +98,6 @@ describe('Attachment Suite', () => {
         const returns = new MockReturns();
 
         setup(new MockFunctions({
-            existsSync: true,
             lstatSync: true,
             getTestAttachmentDirectory: true,
             copyFile: true
@@ -123,7 +122,6 @@ describe('Attachment Suite', () => {
         const returns = new MockReturns({copyFile: error});
 
         setup(new MockFunctions({
-            existsSync: true,
             lstatSync: true,
             getTestAttachmentDirectory: true,
             copyFile: true
@@ -141,7 +139,7 @@ describe('Attachment Suite', () => {
         assert.equal(checks.copyFileCheck, true);
     });
 
-    it('recordAttachment will reject with reason if file does not exist', (done) => {
+    it('recordAttachment will reject with reason if path is not a file', (done) => {
         const error = new Error();
         const strings = new MockStrings();
         const checks = new MockChecks();
@@ -150,7 +148,6 @@ describe('Attachment Suite', () => {
         });
 
         setup(new MockFunctions({
-            existsSync: true,
             lstatSync: true
         }), strings, checks, returns);
 
@@ -174,7 +171,6 @@ describe('Attachment Suite', () => {
         });
 
         setup(new MockFunctions({
-            existsSync: true,
             lstatSync: true
         }), strings, checks, returns);
 
@@ -187,29 +183,6 @@ describe('Attachment Suite', () => {
         });
 
         assert.equal(checks.lstatSyncCheck, true);
-    });
-
-    it('recordAttachment will reject with reason if path does not exist', (done) => {
-        const error = new Error('some error');
-        const strings = new MockStrings();
-        const checks = new MockChecks();
-        const returns = new MockReturns({
-            existsSync: false
-        });
-
-        setup(new MockFunctions({
-            existsSync: true,
-            lstatSync: true
-        }), strings, checks, returns);
-
-        TestContext.Attachments.recordAttachment(strings.attachmentPath).then(() => {
-            assert.fail('Should not have resolved');
-            done();
-        }, (reason) => {
-            assert.equal(reason, 'The file ' + strings.attachmentPath + ' does not exist.');
-            done();
-        });
-
     });
 });
 

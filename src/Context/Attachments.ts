@@ -52,28 +52,24 @@ export namespace Attachments {
         // tslint:disable-next-line:promise-must-complete
         const returnPromise = new Promise<string>((resolver, rejector) => { resolve = resolver; reject = rejector; });
         
-        if (fs.existsSync(attachmentPath)) {
-            try {
-                const stat = fs.lstatSync(attachmentPath);
-                if (stat.isFile()) {
-                    const attachmentDirectory = Attachments.getTestAttachmentDirectory();
-                    const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
-                    fs.copyFile(attachmentPath, destinationFile, (error) => {
-                        if (!error) {
-                            resolve(destinationFile);
-                        } else {
-                            reject(error);
-                        }
-                    });
-                } else {
-                    reject(Constants.PathIsNotAFile);
-                }
-
-            } catch (e) {
-                reject(String.format(Constants.CouldNotCopyAttachmentError, e));
+        try {
+            const stat = fs.lstatSync(attachmentPath);
+            if (stat.isFile()) {
+                const attachmentDirectory = Attachments.getTestAttachmentDirectory();
+                const destinationFile = path.join(attachmentDirectory, path.basename(attachmentPath));
+                fs.copyFile(attachmentPath, destinationFile, (error) => {
+                    if (!error) {
+                        resolve(destinationFile);
+                    } else {
+                        reject(error);
+                    }
+                });
+            } else {
+                reject(Constants.PathIsNotAFile);
             }
-        } else {
-            reject(String.format(Constants.AttachmentDoesNotExist, attachmentPath));
+
+        } catch (e) {
+            reject(String.format(Constants.CouldNotCopyAttachmentError, e));
         }
         return returnPromise;
     }

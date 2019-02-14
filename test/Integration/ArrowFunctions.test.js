@@ -12,6 +12,8 @@ describe('Arrow Functions', () => {
     });
 
     it('Nested Call', () => {
+
+        
         let threw = false;
         try {
             nested()
@@ -22,8 +24,8 @@ describe('Arrow Functions', () => {
         assert.equal(threw, true, "First call should have thrown");
 
         TestContext.updateOptions({
-            callerMatchDepth: 1
-        })
+            callerMatchDepth: 4
+        });
 
         nested();
     });
@@ -31,6 +33,14 @@ describe('Arrow Functions', () => {
 });
 
 function nested() {
+    nested2();
+}
+
+function nested2() {
+    nested3()
+}
+
+function nested3() {
     console.log(TestContext.Attachments.getTestAttachmentDirectory());
     console.log(TestContext.getCurrentTestName());
     console.log(TestContext.getCurrentTestIdentifier())
