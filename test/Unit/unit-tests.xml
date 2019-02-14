@@ -1,5 +1,5 @@
 <RunSettings>
     <JSTest>
-        <TestFramework>jest</TestFramework>
+        <TestFramework>mocha</TestFramework>
     </JSTest>
 </RunSettings>
