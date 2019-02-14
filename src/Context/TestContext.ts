@@ -11,6 +11,10 @@ import { Constants } from '../Constants';
 declare var it: any;
 
 export namespace TestContext {
+    
+    // tslint:disable-next-line:variable-name
+    export const Attachments = _Attachments;
+
     let itOverrideSuccess = false;
     let options: ITestContextOptions;
     
@@ -59,7 +63,11 @@ export namespace TestContext {
         }
     }
     
-    function getTestName(caller: Function, userIdentifier: boolean = false) {
+    function getTestName(caller: Function, getIdentifier: boolean = false) {
+        if (caller === Attachments.getTestAttachmentDirectory) {
+            caller = caller.caller;
+        }
+
         if (itOverrideSuccess) {
             // Jasmine/Jest
             for (let i = 0; i < itList.length; i++) {
@@ -67,7 +75,7 @@ export namespace TestContext {
                     const spec = itList[i][0];
 
                     // jasmine/jest
-                    if (userIdentifier) {
+                    if (getIdentifier) {
                         if (spec.id) {
                             return spec.id;
                         }
@@ -125,9 +133,6 @@ export namespace TestContext {
         
         return null;
     }
-
-    // tslint:disable-next-line:variable-name
-    export const Attachments = _Attachments;
 
     init(defaultOptions);
 }
