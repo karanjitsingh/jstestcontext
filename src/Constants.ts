@@ -34,4 +34,5 @@ export class Constants {
     public static readonly TestAttachmentDirectoryError: string = 'Could not get test attachment directory: {0}';
     public static readonly PathIsNotAFile: string = 'Given path is not a file.';
     public static readonly CouldNotCopyAttachmentError: string = 'Could not copy attachment: {0}';
+    public static readonly CouldNotGetSpecNameIdentifierError: string = 'Could not get spec name / identifier.';
 }

@@ -74,22 +74,28 @@ export namespace TestContext {
                     const spec = itList[i][0];
 
                     // jasmine/jest
-                    if (getIdentifier && spec.id) {
-                        return spec.id;
+                    if (getIdentifier && spec.id && spec.result) {
+                        return spec.result.fullName + '|' + spec.id;
                     } else if (spec.description) {
                         return spec.description;
                     }
 
                     // mocha
                     if (spec.title) {
-                        let node = spec;
-                        let title = '';
-                        while (node && !node.root) {
-                            title = node.title + (title ? ' ' : '') + title;
-                            node = node.parent;
+                        if (getIdentifier) {
+                            let node = spec;
+                            let title = '';
+                            while (node && !node.root) {
+                                title = node.title + (title ? ' ' : '') + title;
+                                node = node.parent;
+                            }
+                            return title + '|' + spec.file;
+                        } else {
+                            return spec.title;
                         }
-                        return title;
                     }
+
+                    assert.fail(Constants.CouldNotGetSpecNameIdentifierError);
                 }
             }
 
