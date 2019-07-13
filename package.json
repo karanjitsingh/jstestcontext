@@ -10,7 +10,7 @@
     "lint": "tslint --project ./src/tsconfig.json",
     "lint:test": "tslint --project ./test/tsconfig.json",
     "build:Debug": "./node_modules/.bin/tsc -p ./src/tsconfig.json --noImplicitUseStrict",
-    "build:Release": "./node_modules/.bin/tsc -p ./src/tsconfig.json --outDir ./src/bin/Release",
+    "build:Release": "./node_modules/.bin/tsc -p ./src/tsconfig.json --noImplicitUseStrict --outDir ./src/bin/Release",
     "build:test": "./node_modules/.bin/tsc -p ./test/Unit/tsconfig.json --noImplicitUseStrict",
     "build": "npm run build:Debug",
     "test": "npm run build:test && node ./node_modules/mocha/bin/mocha -r source-map-support/register ./test/Unit/bin/test/**/*Tests.js",
