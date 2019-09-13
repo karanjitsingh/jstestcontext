@@ -3,7 +3,7 @@
 
 # jstestcontext
 
-jstestcontext is an extension package for [jstestadapter](https://github.com/karanjitsingh/jstestadapter) as a means to provide _MSTest_ style `TestContext` to javascript test methods. Currently the main feature that TestContext exposes is uploading test case level result attachments. This is especially helpful when associating screenshots with failed UI tests running in CI scenario.
+jstestcontext is an extension package for [jstestadapter](https://github.com/karanjitsingh/jstestadapter) as a means to provide _MSTest_ style `TestContext` to javascript test methods. Currently the main feature that TestContext exposes is uploading test case level result attachments. This is especially helpful when associating screenshots with failed UI tests running in CI scenarios.
 
 ### Install
 ```bash
@@ -29,6 +29,15 @@ const TestContext = require('jstestcontext').TestContext;
 #### TestContext.Attachment methods
 
 ```Typescript
+// Let jstestcontext copy the attachment on its own
+describe('Suite', () => {
+    it('Test', () => {.
+        // Copies the given file to the appropriate test attachment directory.
+        TestContext.Attachments.recordAttachment('/path/to/some/file').
+    });
+})
+
+// Copying the attachment yourself
 describe('Suite', () => {
     it('Test', () => {.
         // Returns the directory in which attachments for this test case should be placed.
@@ -36,15 +45,6 @@ describe('Suite', () => {
         
         // User's responsibility to copy the attachment to the directory.
         copyAttachment('/path/to/some/file', testResultsDirectory);
-    });
-})
-```
-
-```Typescript
-describe('Suite', () => {
-    it('Test', () => {.
-        // Copies the given file to the appropriate test attachment directory.
-        TestContext.Attachments.recordAttachment('/path/to/some/file').
     });
 })
 ```
