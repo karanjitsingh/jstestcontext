@@ -22,7 +22,7 @@ steps:
   displayName: 'Unit Tests'
   inputs:
     testAssemblyVer2: 'test\Unit\bin\test\**\*Tests.js'
-    runSettingsFile: 'test/Unit/unit-tests.xml'
+    runSettingsFile: 'test/Unit/unit-tests.runsettings'
     pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
     testRunTitle: 'Unit Tests'
 
