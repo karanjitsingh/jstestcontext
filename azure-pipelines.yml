@@ -35,7 +35,7 @@ steps:
   displayName: 'Integration Tests - jest'
   inputs:
     testAssemblyVer2: 'test\Integration\package.json'
-    runSettingsFile: 'test/Integration/RunSettings/jest-integration.xml'
+    runSettingsFile: 'test/Integration/RunSettings/jest-integration.runsettings'
     pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
     testRunTitle: 'Integration Jest'
 
@@ -43,7 +43,7 @@ steps:
   displayName: 'Integration Tests - mocha'
   inputs:
     testAssemblyVer2: 'test\Integration\*.test.js'
-    runSettingsFile: 'test/Integration/RunSettings/mocha-integration.xml'
+    runSettingsFile: 'test/Integration/RunSettings/mocha-integration.runsettings'
     pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
     testRunTitle: 'Integration Mocha'
 
@@ -51,7 +51,7 @@ steps:
   displayName: 'Integration Tests - jasmine'
   inputs:
     testAssemblyVer2: 'test\Integration\*.test.js'
-    runSettingsFile: 'test/Integration/RunSettings/jasmine-integration.xml'
+    runSettingsFile: 'test/Integration/RunSettings/jasmine-integration.runsettings'
     pathtoCustomTestAdapters: '.\node_modules\jstestadapter'
     testRunTitle: 'Integration Jasmine'
 
